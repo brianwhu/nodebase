@@ -1,0 +1,50 @@
+#!/bin/env bash
+
+name=${1:?*** Missing module name$'\nUsage: module-init <module-name> [ <module-description> ]\n\tCreate a new Node module.'}
+desc=${2:-Default Module Description}
+here=$(dirname $(dirname $(readlink -f $0)))
+
+mkdir $name
+cd $name
+
+# Makefile
+#
+ln -sf ../etc/Makefile .
+
+# package.json
+#
+cat >package.json <<EOS
+{
+  "name": "$name",
+  "version": "1.0.0",
+  "description": "$desc",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "bin": {
+    "$name": "./bin/$name"
+  },
+  "author": "Your Name",
+  "license": "Your License"
+}
+EOS
+
+# index.js
+#
+cat > index.js <<EOS
+exports.$name = function(args) {
+
+}
+EOS
+
+# bin/$name
+#
+mkdir bin
+cat > bin/$name <<EOS
+#!/bin/env node
+/* vim:set filetype=javascript: */
+
+EOS
+
+echo "Node module '$name' created. Please review $name/package.json to customize module settings."

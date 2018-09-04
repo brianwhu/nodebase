@@ -1,0 +1,48 @@
+ifeq ($(OS),Windows_NT)
+	CYGPATH = cygpath -w
+else
+	CYGPATH = echo
+endif
+ifdef DEBUG
+	BUILD = cp
+	BFLAG =
+else
+	BUILD = babel-minify
+	BFLAG = -o
+endif
+
+SOURCES = $(wildcard *.js) $(wildcard *.json) $(wildcard bin/*)
+TARGETS = $(addprefix target/,$(SOURCES))
+PACKAGE = $(wildcard target/*.tgz)
+
+.PHONY: all clean force install
+
+ifeq ($(strip $(PACKAGE)),)
+all: force
+else
+all: $(PACKAGE)
+endif
+
+clean:
+	rm -rf target
+
+force: $(TARGETS)
+	(cd target && npm pack)
+
+install: all
+	npm i $$($(CYGPATH) $$(find target -name '*.tgz')) -g
+
+target/%.tgz: $(TARGETS)
+	(cd target && npm pack)
+
+target/%.js: %.js
+	mkdir -p target
+	$(BUILD) $< $(BFLAG) $@
+
+target/%.json: %.json
+	mkdir -p target
+	cp $< $@
+
+target/bin/%: bin/%
+	mkdir -p target/bin
+	$(BUILD) $< $(BFLAG) $@

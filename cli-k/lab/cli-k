@@ -1,0 +1,22 @@
+#!/bin/env node
+/* vim:set filetype=javascript: */
+
+var cliK = require("..");
+var options = cliK.parse("1.0.0", "cli-K sample program", {
+        stringValue: { value: "defaultString", doc: "A <string> value" }, 
+        backwards: { value: false, doc: "Going backwards" },
+        identifier: { value: "", doc: "A valid <identifier>", regex: /^[a-zA-Z][a-zA-Z0-9]*$/ },
+        integerValue: { value: 0, doc: "An arbitrary <integer> value" },
+        force: { value: false, doc: "Forcing overwrite" },
+        forward: { value: false, doc: "Forwarding the results" },
+        binary: { value: false, doc: "Using binary encoding" },
+        positive: { value: 1, doc: "A <positive integer> value", check: function(v) { return v > 0; } },
+        dateValue: { value: new Date(), doc: "The starting <date> of the operation" },
+        verbose: { value: false, doc: "Show more information" }
+    }, [
+        { name: "input",  value: [], doc: "Input file name" },
+        { name: "output", value: [], doc: "Output file name" }
+    ]
+);
+
+console.log(JSON.stringify(options));

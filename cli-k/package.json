@@ -1,0 +1,14 @@
+{
+  "name": "cli-k",
+  "version": "1.0.0",
+  "description": "Command line interface toolkit",
+  "main": "index.js",
+  "scripts": {
+    "test": "./lab/cli-k"
+  },
+  "author": "Brian Hu",
+  "license": "LGPL",
+  "dependencies": {
+    "json2yaml": "^1.1.0"
+  }
+}
