@@ -1,8 +1,19 @@
 #!/bin/env node
 /* vim:set filetype=javascript: */
 
-var cliK = require("..");
-var options = cliK.parse("1.0.0", "cli-K sample program", {
+var clik = require("..");
+var results = clik.configure({
+        messages: {
+            invalid: "BAD ${opt}: ${val}",
+            unknown: "UNRECOGNIZED: ${arg}"
+        },
+        contents: {
+            prologue: "Examples:\n\
+    cli-k --debug --date-value=2018 --positive=12\n\
+    cli-k --debug --date-value=2018-09-03 --integer-value=-10",
+            epilogue: "See http://www.oracle.com/technetwork/java/javase/documentation/index.html for more details."
+        }
+    }).parse("1.0.0", "cli-k sample program", {
         stringValue: { value: "defaultString", doc: "A <string> value" }, 
         backwards: { value: false, doc: "Going backwards" },
         identifier: { value: "", doc: "A valid <identifier>", regex: /^[a-zA-Z][a-zA-Z0-9]*$/ },
@@ -10,13 +21,14 @@ var options = cliK.parse("1.0.0", "cli-K sample program", {
         force: { value: false, doc: "Forcing overwrite" },
         forward: { value: false, doc: "Forwarding the results" },
         binary: { value: false, doc: "Using binary encoding" },
-        positive: { value: 1, doc: "A <positive integer> value", check: function(v) { return v > 0; } },
-        dateValue: { value: new Date(), doc: "The starting <date> of the operation" },
-        verbose: { value: false, doc: "Show more information" }
-    }, [
-        { name: "input",  value: [], doc: "Input file name" },
-        { name: "output", value: [], doc: "Output file name" }
-    ]
+        positive: { value: 1, doc: "A <positive integer> value", regex: /^[0-9]+$/, check: function(v) { return v > 0; } },
+        nonNegative: { value: 0, doc: "A <non-negative integer> value", regex: /^[0-9]+$/ },
+        dateValue: { value: new Date(""), doc: "The starting <date> of the operation" },
+        verbose: { value: false, doc: "Show more information" },
+        debug: { value: false, doc: "Print options as JSON" }
+    },
+    "source", "[[user@]host:]path", [ "partical-count", "partical-id", [] ], "[[user@]host:]path"
 );
-
-console.log(JSON.stringify(options));
+if (results.opts.debug.value && !results.opts._error) {
+    console.log(JSON.stringify(results, null, 2));
+}
