@@ -13,6 +13,7 @@ exports._ = {
     messages: {
         invalid: "Invalid ${opt}: ${val}",
         unknown: "Unknown option: ${arg}",
+        toomany: "Extra arguments not recognized",
         missing: "Missing required arguments"
     },
     contents: {
@@ -58,9 +59,12 @@ exports.parse = function(version, desc, opts, ...args) {
                 for (var i = 0; i < args.length; ++i) {
                     positional[i] = process.argv[begin + i];
                 }
-            } else {
+            } else if (end - begin < args.length) {
                 // missing arguments
                 results._error = eval("`" + exports._.messages.missing + "`");
+            } else {
+                // too many arguments
+                results._error = eval("`" + exports._.messages.toomany + "`");
             }
         } else if (end - begin < args.length - 1) {
             results._error = eval("`" + exports._.messages.missing + "`");
