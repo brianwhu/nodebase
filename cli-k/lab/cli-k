@@ -29,6 +29,6 @@ var results = clik.configure({
     },
     "source", "[[user@]host:]path", [ "partical-count", "partical-id", [] ], "[[user@]host:]path"
 );
-if (results.opts.debug.value && !results.opts._error) {
+if (results.opts.debug.value && !results._error) {
     console.log(JSON.stringify(results, null, 2));
 }

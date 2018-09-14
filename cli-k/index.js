@@ -55,7 +55,7 @@ exports.parse = function(version, desc, opts, ...args) {
                     positional[i - begin] = process.argv[i];
                 }
             } else if (end - begin == args.length) {
-                // perfect
+                // perfect match
                 for (var i = 0; i < args.length; ++i) {
                     positional[i] = process.argv[begin + i];
                 }
@@ -69,15 +69,20 @@ exports.parse = function(version, desc, opts, ...args) {
         } else if (end - begin < args.length - 1) {
             results._error = eval("`" + exports._.messages.missing + "`");
         } else {
-            // ... [index]      [index+variant-1]         ...              x             [argv.length-1]
-            // ... [  0  ]          [variant-1]        [variant]      [variant+1]        [args.length-1]
+            // before the variant
             for (var i = 0; i < args.variant; ++i) {
                 positional[i] = process.argv[begin + i];
             }
+            // the variant
+            if (end - begin > args.length - 1) {
+                positional[args.variant] = scan(args[args.variant], begin + args.variant, end - args.length + args.variant + 1, results);
+            } else {
+                positional[args.variant] = [];
+            }
+            // after the variant
             for (var i = args.variant + 1; i < args.length; ++i) {
                 positional[i] = process.argv[end - args.length + i];
             }
-            positional[args.variant] = scan(args[args.variant], begin + args.variant, end - args.length + args.variant + 1, results);
         }
         return positional;
     }
@@ -91,7 +96,6 @@ exports.parse = function(version, desc, opts, ...args) {
         console.log("*** Invalid positional argument specification");
         return null;
     }
-//console.log("Positional: ", JSON.stringify(args, 2));
 
     // Boolean options take short forms
     var flags = {};
