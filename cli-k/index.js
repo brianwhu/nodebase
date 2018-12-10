@@ -19,7 +19,8 @@ exports._ = {
     contents: {
         prologue: null,
         epilogue: null
-    }
+    },
+    tokens: null
 }
 
 exports.configure = function(spec) {
@@ -28,6 +29,17 @@ exports.configure = function(spec) {
     return exports;
 }
 
+exports.on = function(tokens) {
+    exports._.tokens = tokens;
+    return exports;
+}
+
+/*
+ * returns {
+    _error: "optional error message",
+    opts: { ... },
+    args: [ ... ]
+*/
 exports.parse = function(version, desc, opts, ...args) {
     function compile(args) {
         args.variant = -1;
@@ -47,17 +59,17 @@ exports.parse = function(version, desc, opts, ...args) {
         return true;
     }
 
-    function scan(args, begin, end, results) {
+    function scan(tokens, args, begin, end, results) {
         var positional = [];
         if (args.variant < 0) {
             if (args.length == 0) {
                 for (var i = begin; i < end; ++i) {
-                    positional[i - begin] = process.argv[i];
+                    positional[i - begin] = tokens[i];
                 }
             } else if (end - begin == args.length) {
                 // perfect match
                 for (var i = 0; i < args.length; ++i) {
-                    positional[i] = process.argv[begin + i];
+                    positional[i] = tokens[begin + i];
                 }
             } else if (end - begin < args.length) {
                 // missing arguments
@@ -71,17 +83,17 @@ exports.parse = function(version, desc, opts, ...args) {
         } else {
             // before the variant
             for (var i = 0; i < args.variant; ++i) {
-                positional[i] = process.argv[begin + i];
+                positional[i] = tokens[begin + i];
             }
             // the variant
             if (end - begin > args.length - 1) {
-                positional[args.variant] = scan(args[args.variant], begin + args.variant, end - args.length + args.variant + 1, results);
+                positional[args.variant] = scan(tokens, args[args.variant], begin + args.variant, end - args.length + args.variant + 1, results);
             } else {
                 positional[args.variant] = [];
             }
             // after the variant
             for (var i = args.variant + 1; i < args.length; ++i) {
-                positional[i] = process.argv[end - args.length + i];
+                positional[i] = tokens[end - args.length + i];
             }
         }
         return positional;
@@ -110,12 +122,15 @@ exports.parse = function(version, desc, opts, ...args) {
     });
 
     var results = { opts: opts };
+    //var index = 2;
 
     // Options, with standard behavior baked in
     opts.help = { value: false, _no_val: true, doc: "Show this help information" };
     opts.version = { value: false, _no_val: true, doc: "Show version" };
-    for (results._index = 2; results._index < process.argv.length && process.argv[results._index].charAt(1) == '-'; ++results._index) {
-        var arg = process.argv[results._index];
+    var tokens = exports._.tokens || process.argv;
+    var offset = exports._.tokens != null ? 0 : 2;
+    for (results._index = offset; results._index < tokens.length && tokens[results._index].charAt(0) == '-'; ++results._index) {
+        var arg = tokens[results._index];
         if (arg.charAt(1) == '-') {
             if (arg.length == 2) {
                 ++results._index;
@@ -168,6 +183,10 @@ exports.parse = function(version, desc, opts, ...args) {
             for (var i = 1; i < arg.length; ++i) {
                 if (flags[arg.charAt(i)]) {
                     flags[arg.charAt(i)].value = true;
+                } else {
+                    arg = arg.charAt(i);
+                    results._error = eval("`" + exports._.messages.unknown + "`");
+                    break;
                 }
             }
         }
@@ -175,11 +194,12 @@ exports.parse = function(version, desc, opts, ...args) {
 
     // Positional arguments
     if (!results._error && !opts.version.value && !opts.help.value && args.length > 0) {
-        results.args = scan(args, results._index, process.argv.length, results);
+        results.args = scan(tokens, args, results._index, tokens.length, results);
     }
 
     if (opts.version.value) {
         console.log(version);
+        return null;
     } else if (results._error || opts.help.value) {
         var program = process.argv[1].replace(/^.*[/\\]/, '');
         if (results._error) {
@@ -195,18 +215,20 @@ exports.parse = function(version, desc, opts, ...args) {
         Object.keys(opts).sort().filter(k => k.charAt(0) != '_').map(k => ({k: k, t: k.replace(/[A-Z]/, s => '-' + s.toLowerCase())})).forEach(function(e) {
             var option = opts[e.k];
             var placeholder = "<value>";
-            var document = option.doc ? option.doc.replace(/<[^<>]+>/, function(s) { placeholder = s; return s.substring(1, s.length-1); }) : "";
+            var usage = option.doc ? option.doc.replace(/<[^<>]+>/, function(s) { placeholder = s; return s.substring(1, s.length-1); }) : "";
             var label = option.brief != null ? "-" + option.brief + ", --" + e.t : option._no_val ? "--" + e.t : "--" + e.t + '=' + placeholder;
             if (label.length > 7) {
                 console.log(`\t${label}`);
-                console.log(`\t\t${document}`);
+                console.log(`\t\t${usage}`);
             } else {
-                console.log(`\t${label}\t${document}`);
+                console.log(`\t${label}\t${usage}`);
             }
         });
         if (exports._.contents.epilogue) {
             console.log(exports._.contents.epilogue);
         }
+        return null;
+    } else {
+        return results;
     }
-    return results;
 }

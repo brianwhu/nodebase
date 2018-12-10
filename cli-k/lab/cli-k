@@ -9,8 +9,8 @@ var results = clik.configure({
         },
         contents: {
             prologue: "Examples:\n\
-    cli-k --debug --date-value=2018 --positive=12\n\
-    cli-k --debug --date-value=2018-09-03 --integer-value=-10",
+        cli-k --debug --date-value=2018 --positive=12\n\
+        cli-k --debug --date-value=2018-09-03 --integer-value=-10",
             epilogue: "See http://www.oracle.com/technetwork/java/javase/documentation/index.html for more details."
         }
     }).parse("1.0.0", "cli-k sample program", {
@@ -29,6 +29,6 @@ var results = clik.configure({
     },
     "source", "[[user@]host:]path", [ "partical-count", "partical-id", [] ], "[[user@]host:]path"
 );
-if (results.opts.debug.value && !results._error) {
+if (results && results.opts.debug.value) {
     console.log(JSON.stringify(results, null, 2));
 }
