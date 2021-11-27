@@ -34,13 +34,20 @@ exports.on = function(tokens) {
     return exports;
 }
 
-/*
+/**
  * returns {
-    _error: "optional error message",
-    opts: { ... },
-    args: [ ... ]
-*/
+ *  opts: { ... },
+ *  args: [ ... ]
+ * } -- if successful
+ * or
+ * null -- otherwise
+ */
 exports.parse = function(version, desc, opts, ...args) {
+    // validate and prepare argument specification
+    // * singular command, args is an array of strings and sub-arrays of strings
+    //      adding to the array a new member 'variant' which is the index of variant part (a sub-array) in the array
+    // * umbrella command, args contains a single object each of whose members is an arary of [ desc, spec, opts, ...args ]
+    //      adding
     function compile(args) {
         args.variant = -1;
         for (var i = 0; i < args.length; ++i) {
@@ -102,6 +109,10 @@ exports.parse = function(version, desc, opts, ...args) {
     function format(args) {
         return args.map(e => e.constructor === Array ? (e.length == 0 ? "..." : "[ " + format(e) + " ]") : e).join(" ");
     }
+
+    /*
+     * ENTRY POINT
+     */
 
     // Positional arguments specification check
     if (!compile(args)) {
