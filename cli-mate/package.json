@@ -1,11 +1,12 @@
 {
-  "name": "cli-k",
+  "name": "cli-mate",
+  "type": "module",
   "version": "0.0.1",
-  "description": "Command line interface toolkit",
+  "description": "A compact CLI option and argument parser",
   "keywords": [ "cli" ],
   "main": "index.js",
   "scripts": {
-    "test": "./lab/cli-k"
+    "test": "./lab/cli-mate.mjs"
   },
   "author": "Brian Hu",
   "license": "LGPL-3.0"

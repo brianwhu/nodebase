@@ -7,11 +7,11 @@ ifdef DEBUG
 	BUILD = cp
 	BFLAG =
 else
-	BUILD = babel-minify
+	BUILD = babel-minify --sourceType module
 	BFLAG = -o
 endif
 
-SOURCES = $(wildcard *.js) $(wildcard *.json) $(wildcard bin/*)
+SOURCES = $(wildcard *.js) $(wildcard *.json) $(wildcard bin/*) README.md
 TARGETS = $(addprefix target/,$(SOURCES))
 PACKAGE = $(wildcard target/*.tgz)
 
@@ -38,6 +38,10 @@ target/%.tgz: $(TARGETS)
 target/%.js: %.js
 	mkdir -p target
 	$(BUILD) $< $(BFLAG) $@
+
+target/%.md: %.md
+	mkdir -p target
+	cp $< $@
 
 target/%.json: %.json
 	mkdir -p target
