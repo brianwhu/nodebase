@@ -150,7 +150,7 @@ const climate = {
                         var opt = equal > 0 ? arg.substring(2, equal) : arg.substring(2);
                         var key = opt.replace(/-./, s => s.charAt(1).toUpperCase());
                         var val = equal > 0 ? arg.substring(equal + 1) : null;
-                        if (opts[key] === null) {
+                        if (!opts[key]) {
                             results._error = eval("`" + this._.messages.unknown + "`");
                             break;
                         } else {
@@ -158,7 +158,9 @@ const climate = {
                                 results._error = eval("`" + this._.messages.invalid + "`");
                                 break;
                             }
-                            if (opts[key].value != null) {
+                            if (opts[key].parse != null) {
+                                opts[key].value = opts[key].parse(val);
+                            } else if (opts[key].value != null) {
                                 if (opts[key].value.constructor === Boolean) {
                                     if (val === null) {
                                         opts[key].value = true;

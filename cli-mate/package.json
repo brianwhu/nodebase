@@ -1,7 +1,7 @@
 {
-  "name": "cli-mate",
+  "name": "@brianwhu/cli-mate",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A compact CLI option and argument parser",
   "keywords": [ "cli" ],
   "main": "index.js",
