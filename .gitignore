@@ -1,2 +1,4 @@
 Makefile
 package-lock.json
+.idea/
+.vscode/
