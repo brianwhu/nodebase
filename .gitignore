@@ -2,3 +2,5 @@ Makefile
 package-lock.json
 .idea/
 .vscode/
+lab/
+tmp/
