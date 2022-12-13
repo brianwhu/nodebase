@@ -33,7 +33,7 @@ install: all
 	npm i $$($(CYGPATH) $$(find target -name '*.tgz')) -g
 
 publish: all
-	(cd target && npm publish)
+	(cd target && npm publish --access=public)
 
 target/%.tgz: $(TARGETS)
 	(cd target && npm pack)

@@ -88,7 +88,7 @@ const climate = {
                 // validate and prepare positional argument specification
                 const compile = args => {
                     args.variant = -1
-                    for (var i = 0; i < args.length; ++i) {
+                    for (let i = 0; i < args.length; ++i) {
                         if (args[i].constructor === Array) {
                             if (args.variant < 0) {
                                 if (compile(args[i])) {
@@ -118,7 +118,7 @@ const climate = {
                 this.flags = {}
                 // Boolean options take short forms
                 Object.keys(opts).filter(k => opts[k].value != null && opts[k].value.constructor === Boolean).forEach(k => {
-                    var brief = k.charAt(0)
+                    let brief = k.charAt(0)
                     if (!this.flags[brief]) {
                         opts[k].brief = brief
                         this.flags[brief] = opts[k]
@@ -149,15 +149,15 @@ const climate = {
              */
             parse: function () {
                 const scan = ((tokens, args, begin, end, results) => {
-                    var positional = []
+                    let positional = []
                     if (args.variant < 0) {
                         if (args.length === 0) {
-                            for (var i = begin; i < end; ++i) {
+                            for (let i = begin; i < end; ++i) {
                                 positional[i - begin] = tokens[i]
                             }
                         } else if (end - begin === args.length) {
                             // perfect match
-                            for (var i = 0; i < args.length; ++i) {
+                            for (let i = 0; i < args.length; ++i) {
                                 positional[i] = tokens[begin + i]
                             }
                         } else if (end - begin < args.length) {
@@ -171,7 +171,7 @@ const climate = {
                         results._error = this._.messages.argument.missing()
                     } else {
                         // before the variant
-                        for (var i = 0; i < args.variant; ++i) {
+                        for (let i = 0; i < args.variant; ++i) {
                             positional[i] = tokens[begin + i]
                         }
                         // the variant
@@ -181,7 +181,7 @@ const climate = {
                             positional[args.variant] = []
                         }
                         // after the variant
-                        for (var i = args.variant + 1; i < args.length; ++i) {
+                        for (let i = args.variant + 1; i < args.length; ++i) {
                             positional[i] = tokens[end - args.length + i]
                         }
                     }
@@ -210,7 +210,7 @@ const climate = {
                 /*
                  * ENTRY POINT
                  */
-                var results = { opts: this.opts }
+                let results = { opts: this.opts }
 
                 // Options, with standard behavior baked in
                 this.opts.help = { value: false, _no_val: true, doc: "Show this help information" }
@@ -218,7 +218,7 @@ const climate = {
 
                 results._index = this._.upper ? this._.upper._index + 1 : 2
                 for (; results._index < process.argv.length && process.argv[results._index].charAt(0) === '-'; ++results._index) {
-                    var arg = process.argv[results._index]
+                    let arg = process.argv[results._index]
                     if (arg.charAt(1) === '-') {
                         if (arg.length === 2) {
                             ++results._index
@@ -226,16 +226,16 @@ const climate = {
                         }
 
                         // a long option
-                        var equal = arg.indexOf('=')
-                        var opt = equal > 0 ? arg.substring(2, equal) : arg.substring(2)
-                        var key = opt.replace(/-./, s => s.charAt(1).toUpperCase())
-                        var val = equal > 0 ? arg.substring(equal + 1) : null
+                        let equal = arg.indexOf('=')
+                        let opt = equal > 0 ? arg.substring(2, equal) : arg.substring(2)
+                        let key = opt.replace(/-./, s => s.charAt(1).toUpperCase())
+                        let val = equal > 0 ? arg.substring(equal + 1) : null
                         if (!this.opts[key]) {
-                            results._error = this._.messages.option.unknown(key)
+                            results._error = this._.messages.option.unknown(opt)
                             break
                         } else {
                             if (val != null && this.opts[key].regex && !val.match(this.opts[key].regex)) {
-                                results._error = this._.messages.option.invalid(arg, val)
+                                results._error = this._.messages.option.invalid(opt, val)
                                 break
                             }
                             if (this.opts[key].parse != null) {
@@ -249,12 +249,12 @@ const climate = {
                                     }
                                 } else if (this.opts[key].value.constructor === Date) {
                                     if (val === null || Number.isNaN((this.opts[key].value = new Date(val)).getTime())) {
-                                        results._error = this._.messages.option.invalid(arg, val)
+                                        results._error = this._.messages.option.invalid(opt, val)
                                         break
                                     }
                                 } else if (this.opts[key].value.constructor === Number) {
                                     if (val === null || Number.isNaN((this.opts[key].value = Number(val)))) {
-                                        results._error = this._.messages.option.invalid(arg, val)
+                                        results._error = this._.messages.option.invalid(opt, val)
                                         break
                                     }
                                 } else {
@@ -264,18 +264,17 @@ const climate = {
                                 this.opts[key].value = val
                             }
                             if (this.opts[key].check && !this.opts[key].check(this.opts[key].value)) {
-                                results._error = this._.messages.option.invalid(arg, val)
+                                results._error = this._.messages.option.invalid(opt, val)
                                 break
                             }
                         }
                     } else {
                         // short option(s)
-                        for (var i = 1; i < arg.length; ++i) {
+                        for (let i = 1; i < arg.length; ++i) {
                             if (this.flags[arg.charAt(i)]) {
                                 this.flags[arg.charAt(i)].value = true
                             } else {
-                                arg = arg.charAt(i)
-                                results._error = this._.messages.option.unknown(arg)
+                                results._error = this._.messages.option.unknown(arg.charAt(i))
                                 break
                             }
                         }
@@ -292,7 +291,7 @@ const climate = {
                     if (this.subs) {
                         if (results._index < process.argv.length) {
                             const command = process.argv[results._index]
-                            var sub = this.subs[command]
+                            let sub = this.subs[command]
                             if (!sub) {
                                 results._error = this._.messages.command.unknown(command)
                             } else {
@@ -324,10 +323,10 @@ const climate = {
                           .filter(k => k.charAt(0) != '_')
                           .map(k => ({ k: k, t: k.replace(/[A-Z]/, s => '-' + s.toLowerCase()) }))
                           .forEach(e => {
-                            var option = this.opts[e.k]
-                            var placeholder = "<value>"
-                            var usage = option.doc ? option.doc.replace(/<[^<>]+>/, s => { placeholder = s; return s.substring(1, s.length - 1) }) : ""
-                            var label = option.brief != null ? `-${option.brief}, --${e.t}`: option._no_val ? `--${e.t}` : `--${e.t}=${placeholder}`
+                            let option = this.opts[e.k]
+                            let placeholder = "<value>"
+                            let usage = option.doc ? option.doc.replace(/<[^<>]+>/, s => { placeholder = s; return s.substring(1, s.length - 1) }) : ""
+                            let label = option.brief != null ? `-${option.brief}, --${e.t}`: option._no_val ? `--${e.t}` : `--${e.t}=${placeholder}`
                             formatLabeledText(label, usage)
                           }
                         )

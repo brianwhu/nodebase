@@ -1,13 +1,12 @@
 {
-  "name": "@brianwhu/cli-mate",
+  "name": "@streamyflow/cli-mate",
   "type": "module",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "description": "A compact CLI option and argument parser",
   "keywords": [ "cli" ],
   "main": "index.js",
   "scripts": {
-    "test": "./lab/cli-mate.mjs"
+    "test": "no tests yet"
   },
-  "author": "Brian Hu",
   "license": "LGPL-3.0"
 }
