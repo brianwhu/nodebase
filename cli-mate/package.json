@@ -1,12 +1,12 @@
 {
   "name": "@streamyflow/cli-mate",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A compact CLI option and argument parser",
   "keywords": [ "cli" ],
   "main": "index.js",
   "scripts": {
-    "test": "no tests yet"
+    "test": "echo no tests yet"
   },
   "license": "LGPL-3.0"
 }

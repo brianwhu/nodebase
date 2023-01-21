@@ -267,12 +267,14 @@ const climate = {
                                 results._error = this._.messages.option.invalid(opt, val)
                                 break
                             }
+                            this.opts[key].provided = true
                         }
                     } else {
                         // short option(s)
                         for (let i = 1; i < arg.length; ++i) {
                             if (this.flags[arg.charAt(i)]) {
                                 this.flags[arg.charAt(i)].value = true
+                                this.flags[arg.charAt(i)].provided = true
                             } else {
                                 results._error = this._.messages.option.unknown(arg.charAt(i))
                                 break
