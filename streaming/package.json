@@ -1,0 +1,23 @@
+{
+  "name": "streaming",
+  "type": "module",
+  "bin": {
+    "streaming": "./index.js"
+  },
+  "version": "1.0.0",
+  "description": "Javascript streaming server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx caxa -i . -o streaming -m \"Preparing to run for the first time. This may take a little while...\" -- \"{{caxa}}/node_modules/.bin/node\" \"{{caxa}}\""
+  },
+  "author": "Brian",
+  "license": "ISC",
+  "dependencies": {
+    "@streamyflow/cli-mate": "^0.1.1",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "caxa": "^3.0.1"
+  }
+}
