@@ -7,6 +7,12 @@ import ChromeWindow from "@streamyflow/chrome-window"
 const CHUNK_SIZE = 10**6 // 1MB
 const MEDIA_PORT = 8000
 
+const parse = (range, limit) => {
+    let numbers = range.replace('bytes=', '').split('-').map(t => Number(t))
+    if (numbers[1] === 0) numbers[1] = Math.min(numbers[0] + CHUNK_SIZE - 1, limit - 1)
+    return numbers
+}
+
 export default toplevel => {
     let cli = climate.on(toplevel).define("Serve contents", {
         open: {
@@ -41,8 +47,7 @@ export default toplevel => {
             process.exit(1)
           }
 
-          const start = Number(range.replace(/\D/g, ""))
-          const end = Math.min(start + CHUNK_SIZE, videoSize - 1)
+          let [ start, end ] = parse(range, videoSize)
 
           // Create headers
           const contentLength = end - start + 1
