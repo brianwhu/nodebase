@@ -210,7 +210,7 @@ const climate = {
                 /*
                  * ENTRY POINT
                  */
-                let results = { opts: this.opts }
+                let results = { $c: climate, opts: this.opts }
 
                 // Options, with standard behavior baked in
                 this.opts.help = { value: false, _no_val: true, doc: "Show this help information" }
@@ -228,7 +228,7 @@ const climate = {
                         // a long option
                         let equal = arg.indexOf('=')
                         let opt = equal > 0 ? arg.substring(2, equal) : arg.substring(2)
-                        let key = opt.replace(/-./, s => s.charAt(1).toUpperCase())
+                        let key = opt.replace(/-./g, s => s.charAt(1).toUpperCase())
                         let val = equal > 0 ? arg.substring(equal + 1) : null
                         if (!this.opts[key]) {
                             results._error = this._.messages.option.unknown(opt)
@@ -323,17 +323,17 @@ const climate = {
                         Object.keys(this.opts)
                           .sort()
                           .filter(k => k.charAt(0) != '_')
-                          .map(k => ({ k: k, t: k.replace(/[A-Z]/, s => '-' + s.toLowerCase()) }))
+                          .map(k => ({ k: k, t: k.replace(/[A-Z]/g, s => '-' + s.toLowerCase()) }))
                           .forEach(e => {
                             let option = this.opts[e.k]
                             let placeholder = "<value>"
                             let usage = option.doc ? option.doc.replace(/<[^<>]+>/, s => { placeholder = s; return s.substring(1, s.length - 1) }) : ""
-                            let label = option.brief != null ? `-${option.brief}, --${e.t}`: option._no_val ? `--${e.t}` : `--${e.t}=${placeholder}`
+                            let label = option.brief != null ? `-${option.brief}, --${e.t}`: option._no_val ? `    --${e.t}` : `    --${e.t}=${placeholder}`
                             formatLabeledText(label, usage)
                           }
                         )
                         if (this.subs) {
-                            console.error(`Available commands. (See '${programName} <command> --help' for usage information.)`)
+                            console.error(`Available commands: (See '${programName} <command> --help' for usage information.)`)
                             Object.keys(this.subs).forEach(command => formatLabeledText(command, this.subs[command].doc))
                         }
                         if (this._.contents.epilogue) {
