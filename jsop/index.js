@@ -9,7 +9,7 @@ let cli = climate.on("1.0.0").configure({
     program: "jp",
   },
   contents: {
-    prologue: "\tIf no lambda is provided, jp pretty-prints the input."
+    prologue: "\tIf at the end of the process the value is 'undefined', nothing is printed."
   }
 }).define("Process a JSON input with a JavaScript lambda then pretty-print the result.", {
     verbose: {
@@ -21,7 +21,7 @@ let cli = climate.on("1.0.0").configure({
       value: false
     },
     formatIndentation: {
-      doc: "Indentation as the <number> of spaces passed to JSON.stringify. Setting to 0 to turn off pretty-printing.",
+      doc: "Use this <number> of space characters as indentation, which is passed to JSON.stringify as the 3rd argument",
       value: 2,
       regex: /^[0-9]+$/,
     },

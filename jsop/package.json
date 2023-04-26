@@ -2,7 +2,8 @@
   "name": "@streamyflow/jp",
   "type": "module",
   "version": "1.0.0",
-  "description": "Command line lambda for JSON processing",
+  "description": "JSON processing with a lambda",
+  "keywords": [ "cli", "json", "lambda" ],
   "main": "index.js",
   "bin": {
     "jp": "./index.js"
@@ -10,9 +11,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
   "license": "ISC",
   "dependencies": {
-    "@streamyflow/cli-mate": "^0.1.1"
+    "@streamyflow/cli-mate": "^0.1.2"
   }
 }

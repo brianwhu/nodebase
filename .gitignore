@@ -1,6 +1,8 @@
 Makefile
 package-lock.json
+node_modules/
 .idea/
 .vscode/
+._*
 lab/
 tmp/
