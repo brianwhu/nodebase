@@ -33,7 +33,8 @@ const climate = {
             epilogue: null
         },
         settings: {
-            program: process.argv[1].replace(/^.*[/\\]/, '')
+            program: process.argv[1].replace(/^.*[/\\]/, ''),
+            newline: /\s*<#>\s*/
         }
     },
 
@@ -199,10 +200,28 @@ const climate = {
                 const formatLabeledText = (label, text) => {
                     if (label.length > 7) {
                         console.error(`\t${label}`)
-                        console.error(`\t\t${text}`)
+                        console.error(`\t\t${fitTextToTerminal(text, '\n\t\t', process.stdout.columns - 16)}`)
                     } else {
-                        console.error(`\t${label}\t${text}`)
+                        console.error(`\t${label}\t${fitTextToTerminal(text, '\n\t\t', process.stdout.columns - 16)}`)
                     }
+                }
+
+                const formatParagraphs = (text, tabs) => text.split(this._.settings.newline).map(
+                    p => '\t'.repeat(tabs) + fitTextToTerminal(p, `\n${'\t'.repeat(tabs)}`, process.stdout.columns - 8*tabs)
+                ).join('\n')
+
+                const fitTextToTerminal = (text, separator, width) => {
+                    let offset = -1
+                    return text = text.replace(/\s+/g, ' ').replace(/ /g, (m, d, s) => {
+                        let next = s.indexOf(' ', d + 1)
+                        if (next === -1) next = s.length
+                        if (next - offset >= width) {
+                            offset = d
+                            return separator
+                        } else {
+                            return m
+                        }
+                    })
                 }
 
                 const programName = this._.upper ? this._.upper.next.command : this._.settings.program
@@ -315,11 +334,12 @@ const climate = {
                         console.error(`${programName}: ${results._error}`)
                     } else {
                         console.error(`Usage:\t${programName} [ options ] ${formatPositional(this.args)}`)
-                        console.error(`\t${this.desc}`)
+                        console.error(formatParagraphs(this.desc, 1))
                         if (this._.contents.prologue) {
-                            console.error(this._.contents.prologue)
+                            console.error()
+                            console.error(formatParagraphs(this._.contents.prologue, 1))
                         }
-                        console.error(`Available options:`)
+                        console.error(`\nAvailable options:`)
                         Object.keys(this.opts)
                           .sort()
                           .filter(k => k.charAt(0) != '_')
@@ -333,11 +353,12 @@ const climate = {
                           }
                         )
                         if (this.subs) {
-                            console.error(`Available commands: (See '${programName} <command> --help' for usage information.)`)
-                            Object.keys(this.subs).forEach(command => formatLabeledText(command, this.subs[command].doc))
+                            console.error(`\nAvailable commands: (See '${programName} <command> --help' for usage information.)`)
+                            Object.keys(this.subs).filter(c => !this.subs[c].hidden).forEach(command => formatLabeledText(command, this.subs[command].doc))
                         }
                         if (this._.contents.epilogue) {
-                            console.error(this._.contents.epilogue)
+                            console.error()
+                            console.error(formatParagraphs(this._.contents.epilogue, 1))
                         }
                     }
                     return null
