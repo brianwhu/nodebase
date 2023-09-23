@@ -1,0 +1,19 @@
+{
+  "name": "@streamyflow/terminal",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Basic terminal functions",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "cli",
+    "terminal"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^10.2.0"
+  }
+}
