@@ -30,7 +30,7 @@ if (process.env.VERBOSE) {
     const lines = formatted.split(NEWLINE)
 
     it('should have the output content matching the input', function () {
-      const originalCompacted = sample.replace(/\s+/g, ' ')
+      const originalCompacted = sample.trim().replace(/\s+/g, ' ')
       const formattedRestored = lines.map(l => l.replace(new RegExp('^' + PREFIX), '')).join(' ')
       assert.strictEqual(originalCompacted, formattedRestored, "Formatting loses contents")
     })

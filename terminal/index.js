@@ -1,10 +1,14 @@
 /**
  * Layout text within a given width
+ *
+ * @param text - the paragraph to layout
+ * @param separator - the character sequence to separate lines
+ * @param width - the width of the terminal window
+ * @param sizer - placeholder/keyword handling
  */
-
-const layout = (text, separator, width) => {
+const layout = (text, separator, width, sizer) => {
     let offset = -1
-    return text = text.replace(/\s+/g, ' ').replace(/ /g, (m, d, s) => {
+    return text.trim().replace(/\s+/g, ' ').replace(/ /g, (m, d, s) => {
 //console.error(`width:${width}, space:${d}, offset:${offset}`)
         let next = s.indexOf(' ', d + 1)
 //console.error('-'.repeat(width))
@@ -12,7 +16,8 @@ const layout = (text, separator, width) => {
         if (next === -1) next = s.length
 //console.error(' '.repeat(next) + '^')
 //console.error(next - offset)
-        if (next - offset > width + 1) {
+        let size = sizer ? sizer(s.substring(d + 1, next)) : next - d - 1;
+        if (size + d - offset > width) {
             offset = d
 //console.error('\tnewline')
             return separator
