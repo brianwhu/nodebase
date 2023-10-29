@@ -13,6 +13,6 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@streamyflow/cli-mate": "^0.1.2"
+    "@streamyflow/cli-mate": "^0.1.3"
   }
 }

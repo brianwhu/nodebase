@@ -6,10 +6,10 @@ import climate from '@streamyflow/cli-mate'
 
 let cli = climate.on("1.0.0").configure({
   settings: {
-    program: "jp",
+    placeholder: "underline",
   },
   contents: {
-    prologue: "\tIf at the end of the process the value is 'undefined', nothing is printed."
+    prologue: "\tIf at the end of the process the value is [undefined], nothing is printed."
   }
 }).define("Process a JSON input with a JavaScript lambda then pretty-print the result.", {
     verbose: {
@@ -17,7 +17,7 @@ let cli = climate.on("1.0.0").configure({
       value: false
     },
     nullAsUndefined: {
-      doc: "Treat a null result as undefined",
+      doc: "Treat a [null] result as [undefined]",
       value: false
     },
     formatIndentation: {
@@ -26,7 +26,7 @@ let cli = climate.on("1.0.0").configure({
       regex: /^[0-9]+$/,
     },
   },
-  [ "lambda" ]
+  [ "<lambda>" ]
 ).parse()
 
 if (cli) {
