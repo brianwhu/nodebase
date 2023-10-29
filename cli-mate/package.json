@@ -1,12 +1,21 @@
 {
   "name": "@streamyflow/cli-mate",
   "type": "module",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A compact CLI option and argument parser",
-  "keywords": [ "cli" ],
+  "keywords": [
+    "cli"
+  ],
   "main": "index.js",
   "scripts": {
-    "test": "echo no tests yet"
+    "test": "c8 mocha"
   },
-  "license": "LGPL-3.0"
+  "license": "LGPL-3.0",
+  "dependencies": {
+    "@streamyflow/terminal": "^1.0.0"
+  },
+  "devDependencies": {
+    "c8": "^8.0.1",
+    "mocha": "^10.2.0"
+  }
 }

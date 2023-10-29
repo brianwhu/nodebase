@@ -59,3 +59,26 @@ Available options:
 		Show version
 The mv-cli utility is expected to be IEEE Std 1003.2 (''POSIX.2'') compatible.
 ```
+
+## Reference
+
+### Basic Usage
+
+### Settings
+
+ Parameter | Defintion | Value
+--|--|--
+`program`|The name of the program|Default to the name of the script
+`newline`|The marker that represents a newline in documentations|`<#>`
+`eager`|By default, if the command line fails to parse, only an error message is issued to the user. With `eager` set to true, `cli-mate` will also print the full usage.|`false*`<br>`true`
+`placeholder`|Placeholder (e.g. `<params>`) decoration|`undefined*`<br>`underline`<br>`bold`<br>`invert`
+`keyword`|Keyword (e.g. `[null]`) decoration|`undefined`<br>`underline`<br> `bold*`<br>`invert`
+
+### Paragraph Formatting
+
+All embedded whitespace sequences are each replaced with a single space. To introduce line breaks, use special sequence `<#>`, which can be overridden
+if needed.
+
+### Defining Optional Arguments
+
+### Defining an Umbrella CLI

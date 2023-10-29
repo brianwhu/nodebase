@@ -1,3 +1,5 @@
+import terminal from "@streamyflow/terminal"
+
 /*
     Reserved options:
         --help
@@ -30,12 +32,39 @@ const climate = {
         },
         contents: {
             prologue: null,
-            epilogue: null
+            epilogue: null,
         },
         settings: {
-            program: process.argv[1].replace(/^.*[/\\]/, ''),
-            newline: /\s*<#>\s*/
-        }
+            // program name
+            program: process.argv[1].replace(/^.*[/\\]/, '[') + ']',
+
+            // newline marker
+            newline: /\s*<#>\s*/,
+
+            // whether eager to offer full usage description
+            eager: false,
+
+            // placeholder decoration
+            placeholder: undefined,
+
+            // keyword decoration
+            keyword: 'bold',
+        },
+    },
+
+    // --------------------
+    // other configurations
+    // --------------------
+    $: {
+        opening: {
+            bold: '\x1b[1m',
+            underline: '\x1b[4m',
+            invert: '\x1b[7m',
+        },
+        closing: '\x1b[0m',
+
+        placeholder: /<([^\s<>]+)>/g,
+        keyword: /\[([^\s^\]\[]+)\]/g,
     },
 
     /**
@@ -191,37 +220,36 @@ const climate = {
 
                 const formatPositional = array => {
                     if (array) {
-                        return array.map(e => e.constructor === Array ? (e.length === 0 ? "..." : `[ ${formatPositional(e)} ]`) : `<${e}>`).join(" ")
+                        return highlight(array.map(e => e.constructor === Array ? (e.length === 0 ? "..." : `[ ${formatPositional(e)} ]`) : e).join(" "))
                     } else {
-                        return "<command>"
+                        return highlight("<command>")
                     }
+                }
+
+                // decorate each placeholder, a character sequence begining with '<' and ending with '>', with opening and closing sequences
+                // specified in _.settings.placeholder
+                const highlight = s => {
+                    if (this._.settings.placeholder && climate.$.opening[this._.settings.placeholder]) {
+                        s = s.replace(climate.$.placeholder, `${climate.$.opening[this._.settings.placeholder]}$1${climate.$.closing}`)
+                    }
+                    if (this._.settings.keyword && climate.$.opening[this._.settings.keyword]) {
+                        s = s.replace(climate.$.keyword, `${climate.$.opening[this._.settings.keyword]}$1${climate.$.closing}`)
+                    }
+                    return s
                 }
 
                 const formatLabeledText = (label, text) => {
                     if (label.length > 7) {
-                        console.error(`\t${label}`)
-                        console.error(`\t\t${fitTextToTerminal(text, '\n\t\t', process.stdout.columns - 16)}`)
+                        console.error(highlight(`\t${label}\n\t\t${terminal.layout(text, '\n\t\t', process.stdout.columns - 16)}`))
                     } else {
-                        console.error(`\t${label}\t${fitTextToTerminal(text, '\n\t\t', process.stdout.columns - 16)}`)
+                        console.error(highlight(`\t${label}\t${terminal.layout(text, '\n\t\t', process.stdout.columns - 16)}`))
                     }
                 }
 
-                const formatParagraphs = (text, tabs) => text.split(this._.settings.newline).map(
-                    p => '\t'.repeat(tabs) + fitTextToTerminal(p, `\n${'\t'.repeat(tabs)}`, process.stdout.columns - 8*tabs)
-                ).join('\n')
-
-                const fitTextToTerminal = (text, separator, width) => {
-                    let offset = -1
-                    return text = text.replace(/\s+/g, ' ').replace(/ /g, (m, d, s) => {
-                        let next = s.indexOf(' ', d + 1)
-                        if (next === -1) next = s.length
-                        if (next - offset >= width) {
-                            offset = d
-                            return separator
-                        } else {
-                            return m
-                        }
-                    })
+                const formatParagraphs = (text, tabs) => {
+                    console.error(highlight(text.split(this._.settings.newline).map(
+                        p => '\t'.repeat(tabs) + terminal.layout(p, `\n${'\t'.repeat(tabs)}`, process.stdout.columns - 8*tabs)
+                    ).join('\n')))
                 }
 
                 const programName = this._.upper ? this._.upper.next.command : this._.settings.program
@@ -235,8 +263,9 @@ const climate = {
                 this.opts.help = { value: false, _no_val: true, doc: "Show this help information" }
                 if (this._.version) this.opts.version = { value: false, _no_val: true, doc: "Show version" }
 
-                results._index = this._.upper ? this._.upper._index + 1 : 2
-                for (; results._index < process.argv.length && process.argv[results._index].charAt(0) === '-'; ++results._index) {
+                const FIRST_INDEX = this._.upper ? this._.upper._index + 1 : 2
+
+                for (results._index = FIRST_INDEX; results._index < process.argv.length && process.argv[results._index].charAt(0) === '-'; ++results._index) {
                     let arg = process.argv[results._index]
                     if (arg.charAt(1) === '-') {
                         if (arg.length === 2) {
@@ -264,7 +293,7 @@ const climate = {
                                     if (val === null) {
                                         this.opts[key].value = true
                                     } else {
-                                        this.opts[key].value = val.match(/(true|t|yes|y|on)/i)
+                                        this.opts[key].value = val.match(/^(true|t|yes|y|on)$/i) !== null
                                     }
                                 } else if (this.opts[key].value.constructor === Date) {
                                     if (val === null || Number.isNaN((this.opts[key].value = new Date(val)).getTime())) {
@@ -331,13 +360,14 @@ const climate = {
 
                 if (results._error || this.opts.help.value) {
                     if (results._error) {
-                        console.error(`${programName}: ${results._error}`)
-                    } else {
-                        console.error(`Usage:\t${programName} [ options ] ${formatPositional(this.args)}`)
-                        console.error(formatParagraphs(this.desc, 1))
+                        console.error(highlight(`${programName}: ${results._error}`))
+                    }
+                    if (!results._error || (this._.settings.eager && process.argv.length === FIRST_INDEX)) {
+                        console.error(highlight(`Usage:\t${programName} [ <options> ... ] ${formatPositional(this.args)}`))
+                        formatParagraphs(this.desc, 1)
                         if (this._.contents.prologue) {
                             console.error()
-                            console.error(formatParagraphs(this._.contents.prologue, 1))
+                            formatParagraphs(this._.contents.prologue, 1)
                         }
                         console.error(`\nAvailable options:`)
                         Object.keys(this.opts)
@@ -353,12 +383,12 @@ const climate = {
                           }
                         )
                         if (this.subs) {
-                            console.error(`\nAvailable commands: (See '${programName} <command> --help' for usage information.)`)
+                            console.error(highlight(`\nAvailable commands: (See '${programName} <command> --help' for usage information.)`))
                             Object.keys(this.subs).filter(c => !this.subs[c].hidden).forEach(command => formatLabeledText(command, this.subs[command].doc))
                         }
                         if (this._.contents.epilogue) {
                             console.error()
-                            console.error(formatParagraphs(this._.contents.epilogue, 1))
+                            formatParagraphs(this._.contents.epilogue, 1)
                         }
                     }
                     return null
