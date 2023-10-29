@@ -1,7 +1,7 @@
 {
   "name": "@streamyflow/jp",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JSON processing with a lambda",
   "keywords": [ "cli", "json", "lambda" ],
   "main": "index.js",
