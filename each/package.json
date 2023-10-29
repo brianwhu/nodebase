@@ -1,0 +1,19 @@
+{
+  "name": "@streamyflow/each",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Line processing with a lambda",
+  "keywords": [ "cli", "json", "lambda" ],
+  "main": "index.js",
+  "bin": {
+    "each": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@streamyflow/cli-mate": "^0.1.3"
+  }
+}
