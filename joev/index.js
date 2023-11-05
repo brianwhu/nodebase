@@ -4,14 +4,14 @@ Error.stackTraceLimit = 0
 
 import climate from '@streamyflow/cli-mate'
 
-let cli = climate.on("1.0.0").configure({
+let cli = climate.on("1.0.1").configure({
   settings: {
     placeholder: "underline",
   },
   contents: {
     prologue: "\tIf at the end of the process the value is [undefined], nothing is printed."
   }
-}).define("Process a JSON input with a JavaScript lambda then pretty-print the result.", {
+}).define("Evaluate a JSON input with a JavaScript lambda then pretty-print the result.", {
     verbose: {
       doc: "Display more information about the operations",
       value: false

@@ -24,7 +24,7 @@ all: $(PACKAGE)
 endif
 
 clean:
-	rm -rf target
+	rm -rf target coverage
 
 force: $(TARGETS)
 	(cd target && npm pack)

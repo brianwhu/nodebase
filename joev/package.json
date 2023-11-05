@@ -1,12 +1,16 @@
 {
-  "name": "@streamyflow/jp",
+  "name": "joev",
   "type": "module",
   "version": "1.0.1",
-  "description": "JSON processing with a lambda",
-  "keywords": [ "cli", "json", "lambda" ],
+  "description": "JavaScript object evaluation with a lambda",
+  "keywords": [
+    "cli",
+    "json",
+    "lambda"
+  ],
   "main": "index.js",
   "bin": {
-    "jp": "./index.js"
+    "joev": "./index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
