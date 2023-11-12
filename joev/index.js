@@ -4,8 +4,9 @@ Error.stackTraceLimit = 0
 
 import climate from '@streamyflow/cli-mate'
 
-let cli = climate.on("1.0.1").configure({
+let cli = climate.on("1.0.2").configure({
   settings: {
+    program: "joev",
     placeholder: "underline",
   },
   contents: {

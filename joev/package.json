@@ -1,7 +1,7 @@
 {
   "name": "joev",
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "JavaScript object evaluation with a lambda",
   "keywords": [
     "cli",
