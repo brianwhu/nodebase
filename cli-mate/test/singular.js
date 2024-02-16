@@ -54,13 +54,21 @@ describe('cli-mate', function () {
             booleanValue: { value: false, doc: "Use open format" },
             booleanValue2: { value: false, doc: "Use alternative format" },
             dateValue: { value: new Date, doc: "Use given date instead" },
-            checkFunction: { value: "", check: text => text && text.startsWith("F:"), doc: "Use a format, which must start with 'F:'" },
+            checkFunction: {
+                value: "",
+                check: text => text && text.startsWith("F:"),
+                doc: "Use a format, which must start with 'F:'"
+            },
             duration: {
                 value: undefined,
                 regex: /[1-9][0-9]*:[1-9][0-9]*:[1-9][0-9]*/,
                 parse: t => t.split(':').reduce((s, e, i) => s += e * Math.pow(10, 2-i), 0),
                 doc: "Set the duration of the operation"
             },
+            usingSSO: {
+                value: false,
+                doc: "Using Sigle-Sign-On (SSO)"
+            }
         },
         "<arg1>", "<arg2>"
     )
@@ -354,7 +362,23 @@ describe('cli-mate', function () {
       assert.strictEqual(lines[1], '')
     })
 
-    //process.stderr.write = stderr_write
+    it('should handle all-caps pattern in option names - usage', function () {
+      process.argv = [ process.argv[0], process.argv[1], "--help" ]
+      text = ""
+      const cli = parser.parse()
+//console.log(text)
+      const lines = text.split(/[\n\r]/)
+      assert.notEqual(lines.find(s => s.indexOf('-u, --using-sso')), -1)
+    })
+
+    it('should handle all-caps pattern in option names - parsing', function () {
+      process.argv = [ process.argv[0], process.argv[1], "--using-sso", argument1, argument2 ]
+      text = "" 
+      const cli = parser.parse()
+//console.log(text) 
+      assert.strictEqual(cli.opts.usingSSO.value, true)
+    })
+
   })
 
   describe('#parse-variant()', function () {

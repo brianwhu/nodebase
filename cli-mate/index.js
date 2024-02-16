@@ -65,6 +65,8 @@ const climate = {
 
         placeholder: /<([^\s<>]+)>/g,
         keyword: /\[([^\s^\]\[]+)\]/g,
+
+        normalize: k => k.replace(/[A-Z]{2,}/, m => m.charAt(0) + m.substring(1).toLowerCase()),
     },
 
     /**
@@ -145,6 +147,11 @@ const climate = {
 
                 this.desc = desc
                 this.opts = opts
+                this.aliases = {}
+                // All-caps option names require aliases
+                Object.keys(opts).filter(k => k.search(/[A-Z]{2,}/) > -1).forEach(k => {
+                    this.aliases[climate.$.normalize(k)] = opts[k]
+                })
                 this.flags = {}
                 // Boolean options take short forms
                 Object.keys(opts).filter(k => opts[k].value != null && opts[k].value.constructor === Boolean).forEach(k => {
@@ -278,44 +285,45 @@ const climate = {
                         let opt = equal > 0 ? arg.substring(2, equal) : arg.substring(2)
                         let key = opt.replace(/-./g, s => s.charAt(1).toUpperCase())
                         let val = equal > 0 ? arg.substring(equal + 1) : null
-                        if (!this.opts[key]) {
+                        let longOption = this.aliases[key] ?? this.opts[key]
+                        if (!longOption) {
                             results._error = this._.messages.option.unknown(opt)
                             break
                         } else {
-                            if (val != null && this.opts[key].regex && !val.match(this.opts[key].regex)) {
+                            if (val != null && longOption.regex && !val.match(longOption.regex)) {
                                 results._error = this._.messages.option.invalid(opt, val)
                                 break
                             }
-                            if (this.opts[key].parse != null) {
-                                this.opts[key].value = this.opts[key].parse(val)
-                            } else if (this.opts[key].value != null) {
-                                if (this.opts[key].value.constructor === Boolean) {
+                            if (longOption.parse != null) {
+                                longOption.value = longOption.parse(val)
+                            } else if (longOption.value != null) {
+                                if (longOption.value.constructor === Boolean) {
                                     if (val === null) {
-                                        this.opts[key].value = true
+                                        longOption.value = true
                                     } else {
-                                        this.opts[key].value = val.match(/^(true|t|yes|y|on)$/i) !== null
+                                        longOption.value = val.match(/^(true|t|yes|y|on)$/i) !== null
                                     }
-                                } else if (this.opts[key].value.constructor === Date) {
-                                    if (val === null || Number.isNaN((this.opts[key].value = new Date(val)).getTime())) {
+                                } else if (longOption.value.constructor === Date) {
+                                    if (val === null || Number.isNaN((longOption.value = new Date(val)).getTime())) {
                                         results._error = this._.messages.option.invalid(opt, val)
                                         break
                                     }
-                                } else if (this.opts[key].value.constructor === Number) {
-                                    if (val === null || Number.isNaN((this.opts[key].value = Number(val)))) {
+                                } else if (longOption.value.constructor === Number) {
+                                    if (val === null || Number.isNaN((longOption.value = Number(val)))) {
                                         results._error = this._.messages.option.invalid(opt, val)
                                         break
                                     }
                                 } else {
-                                    this.opts[key].value = val
+                                    longOption.value = val
                                 }
                             } else {
-                                this.opts[key].value = val
+                                longOption.value = val
                             }
-                            if (this.opts[key].check && !this.opts[key].check(this.opts[key].value)) {
+                            if (longOption.check && !longOption.check(longOption.value)) {
                                 results._error = this._.messages.option.invalid(opt, val)
                                 break
                             }
-                            this.opts[key].provided = true
+                            longOption.provided = true
                         }
                     } else {
                         // short option(s)
@@ -373,7 +381,7 @@ const climate = {
                         Object.keys(this.opts)
                           .sort()
                           .filter(k => k.charAt(0) != '_')
-                          .map(k => ({ k: k, t: k.replace(/[A-Z]/g, s => '-' + s.toLowerCase()) }))
+                          .map(k => ({ k: k, t: climate.$.normalize(k).replace(/[A-Z]/g, s => '-' + s.toLowerCase()) }))
                           .forEach(e => {
                             let option = this.opts[e.k]
                             let placeholder = "<value>"
