@@ -66,7 +66,11 @@ const climate = {
         placeholder: /<([^\s<>]+)>/g,
         keyword: /\[([^\s^\]\[]+)\]/g,
 
-        normalize: k => k.replace(/[A-Z]{2,}/, m => m.charAt(0) + m.substring(1).toLowerCase()),
+        normalize: k => k.replace(/[A-Z][a-z]/g, m => ',' + m)
+                         .replace(/[a-z][A-Z]/g, m => m[0] + ',' + m[1])
+                         .split(',')
+                         .map(t => t.charAt(0) + t.substring(1).toLowerCase())
+                         .join('')
     },
 
     /**

@@ -68,7 +68,11 @@ describe('cli-mate', function () {
             usingSSO: {
                 value: false,
                 doc: "Using Sigle-Sign-On (SSO)"
-            }
+            },
+            usingOSHardwareHV: {
+                value: false,
+                doc: "Using OS hardware HV"
+            },
         },
         "<arg1>", "<arg2>"
     )
@@ -369,14 +373,16 @@ describe('cli-mate', function () {
 //console.log(text)
       const lines = text.split(/[\n\r]/)
       assert.notEqual(lines.find(s => s.indexOf('-u, --using-sso')), -1)
+      assert.notEqual(lines.find(s => s.indexOf('    --using-os-hardware-hv')), -1)
     })
 
     it('should handle all-caps pattern in option names - parsing', function () {
-      process.argv = [ process.argv[0], process.argv[1], "--using-sso", argument1, argument2 ]
+      process.argv = [ process.argv[0], process.argv[1], "--using-sso", "--using-os-hardware-hv", argument1, argument2 ]
       text = "" 
       const cli = parser.parse()
 //console.log(text) 
       assert.strictEqual(cli.opts.usingSSO.value, true)
+      assert.strictEqual(cli.opts.usingOSHardwareHV.value, true)
     })
 
   })

@@ -1,7 +1,7 @@
 {
   "name": "@streamyflow/cli-mate",
   "type": "module",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A compact CLI option and argument parser",
   "keywords": [
     "cli"
