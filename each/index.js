@@ -2,10 +2,12 @@
 
 Error.stackTraceLimit = 0
 
-import climate from '@streamyflow/cli-mate'
-import readln from 'node:readline'
+import LineReader from 'node:readline'
+import FileSystem from 'fs'; // for scripting use
 
-let cli = climate.on("1.0.0").configure({
+import ___climate from '@streamyflow/cli-mate'
+
+let cli = ___climate.on("1.0.0").configure({
   settings: {
     placeholder: "underline",
   },
@@ -55,7 +57,7 @@ if (cli) {
   }
 
   const chunks = []
-  const reader = readln.createInterface({
+  const reader = LineReader.createInterface({
     input: process.stdin,
     crlfDelay: Infinity
   })
